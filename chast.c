@@ -76,14 +76,14 @@ int main (int argc, uint8_t * argv[]) {
   printf("| HEX | DEC | CHAR | COUNT | PROCENT |\n");
   printf("--------------------------------------\n");
 
-  for (int i = 255, j = 255; (sort[i] > 0) && (j > 0); i--) {
+  for (int i = 255, j = 0; (sort[i] > 0) && (j < 256); i--) {
 
-  	j = 255;
+  	j = 0;
     
     while (sort[i] != data[j])
-      j--;
+      j++;
 
-    if (sort[i] == 0)
+    if (sort[i] == 0 && data[j] == 0)
       continue;
 
     procent = (float)sort[i] / div;
