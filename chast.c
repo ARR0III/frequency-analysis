@@ -78,7 +78,7 @@ int main (int argc, uint8_t * argv[]) {
 
   for (int i = 255, j = 0; (sort[i] > 0) && (j < 256); i--) {
 
-  	j = 0;
+    j = 0;
     
     while (sort[i] != data[j])
       j++;
@@ -95,5 +95,6 @@ int main (int argc, uint8_t * argv[]) {
   printf("--------------------------------------\n");
 
   memset(data, 0, 256 * sizeof(int));
+  memset(sort, 0, 256 * sizeof(int));
   return 0;
 }
