@@ -69,7 +69,7 @@ int main (int argc, uint8_t * argv[]) {
     data[c] += 1;
 
   memcpy(sort, data, 256 * sizeof(long int));
-  quicksort(sort, 0, 256);
+  quicksort(sort, 0, 255);
 
   fclose(f);
 
@@ -77,11 +77,11 @@ int main (int argc, uint8_t * argv[]) {
   printf("| HEX | DEC | CHR |  FREQUENCY | PROCENT |\n");
   printf("------------------------------------------\n");
 
-  for (int i = 255, j = 255; (i >= 0) && (j >= 0) && (sort[i] > 0); i--) {
+  for (int i = 255, j; (i >= 0) && (j >= 0) && (sort[i] > 0); i--) {
 
     j = 255;
 
-    while ((j > 0) && (sort[i] != data[j]))
+    while ((j >= 0) && (sort[i] != data[j]))
       j--;
 
     if ((j < 0) || (data[j] == -1))
@@ -89,14 +89,12 @@ int main (int argc, uint8_t * argv[]) {
 
     procent = (float)sort[i] / div;
     printf("|  %2.2X | %3d |   %c | %10ld |  %5.2f%% |\n", (uint8_t)j, j, (chrcrt(j) ? (uint8_t)j : ' '), sort[i], procent);
-    fflush(stdin);
+    fflush(stdout);
 
     sort[i] = data[j] = -1;
   }
 
   printf("------------------------------------------\n");
 
-  memset(data, 0, 256 * sizeof(long int));
-  memset(sort, 0, 256 * sizeof(long int));
   return 0;
 }
