@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 
-void quicksort(long int * data, int min, int max) {
+void quicksort(int * data, int min, int max) {
   if (min < max) {
     int left = min, right = max, middle = data[(left + right) / 2];
       do {
@@ -55,19 +55,20 @@ int main (int argc, uint8_t * argv[]) {
   
   if (fsize <= 0) {
     printf("[#] Size of file \"%s\" not more 0 byte!", argv[1]);
+    fclose(f);
     return 0;
   }
   
   float div = (float)fsize / 100.0;
-  long int data[256] = {0};
-  long int sort[256] = {0};
+  int data[256] = {0};
+  int sort[256] = {0};
   float procent;  
   int c;
   
   while ((c = fgetc(f)) != EOF)
     data[c] += 1;
 
-  memcpy(sort, data, 256 * sizeof(long int));
+  memcpy(sort, data, 256 * sizeof(int));
   quicksort(sort, 0, 256);
 
   fclose(f);
@@ -80,21 +81,22 @@ int main (int argc, uint8_t * argv[]) {
 
     j = 255;
 
-    while (sort[i] != data[j])
+    while ((j > 0) && (sort[i] != data[j]))
       j--;
 
-    if (sort[i] == 0 && data[j] == 0)
+    if (sort[i] == -1 && data[j] == -1)
       continue;
 
     procent = (float)sort[i] / div;
-    printf("|  %2.2X | %3d |   %c | %10ld |  %5.2f%% |\n", (uint8_t)j, j, (chrcrt(j) ? (uint8_t)j : ' '), sort[i], procent);
-  
-    sort[i] = data[j] = 0;
+    printf("|  %2.2X | %3d |   %c | %10d |  %5.2f%% |\n", (uint8_t)j, j, (chrcrt(j) ? (uint8_t)j : ' '), sort[i], procent);
+    fflush(stdin);
+
+    sort[i] = data[j] = -1;
   }
 
   printf("------------------------------------------\n");
 
-  memset(data, 0, 256 * sizeof(long int));
-  memset(sort, 0, 256 * sizeof(long int));
+  memset(data, 0, 256 * sizeof(int));
+  memset(sort, 0, 256 * sizeof(int));
   return 0;
 }
