@@ -2,18 +2,22 @@
 #include <stdint.h>
 #include <string.h>
 
-void quicksort(long int * data, int min, int max) {
+typedef int32_t INT32;
+
+void quicksort(INT32 * data, INT32 min, INT32 max) {
   if (min < max) {
-    int left = min, right = max, middle = data[(left + right) / 2];
+    INT32 left = min, right = max, middle = data[(left + right) / 2];
       do {
-        while (data[left] < middle)
+        while (data[left] < middle) {
           left++;
+        }
         
-        while (data[right] > middle)
+        while (data[right] > middle) {
           right--;
+        }
         
         if (left <= right) {
-          int tmp = data[left];
+          INT32 tmp = data[left];
           data[left] = data[right];
           data[right] = tmp;
           left++;
@@ -26,26 +30,27 @@ void quicksort(long int * data, int min, int max) {
   }
 }
 
-int chrcrt (int c) {
-  if (c <  33 || c >  126)
+int charcontrol(int c) {
+  if (c < 33 || c > 126) {
     return 0;
-  else
-  if (c >= 33 && c <= 126)
+  }
+  else {
     return c;
+  }
 }
 
-int main (int argc, uint8_t * argv[]) {
+int main (int argc, char * argv[]) {
 
   if (argc != 2) {
-    printf("[#] Incorrect arguments!\n");
-    printf("[#] Enter: %s [filename]\n", argv[0]);
+    printf("[!] Error: incorrect arguments!\n");
+    printf("[!] Enter: %s [filename]\n", argv[0]);
     return 0;
   }
   
   FILE * f = fopen(argv[1], "rb");
  
   if (f == NULL) {
-    printf("[#] File \"%s\" not openned!\n", argv[1]);
+    printf("[!] File \"%s\" not openned!\n", argv[1]);
     return 0;
   }
 
@@ -54,41 +59,51 @@ int main (int argc, uint8_t * argv[]) {
   fseek(f, 0, SEEK_SET);
   
   if (fsize <= 0) {
-    printf("[#] Size of file \"%s\" not more 0 byte!", argv[1]);
+    printf("[!] Size of file \"%s\" not more 0 byte!", argv[1]);
     fclose(f);
     return 0;
   }
   
   float div = (float)fsize / 100.0;
-  long int data[256] = {0};
-  long int sort[256] = {0};
-  float procent;  
-  int c;
   
-  while ((c = fgetc(f)) != EOF)
-    data[c] += 1;
+  INT32 data[256] = {0};
+  INT32 sort[256] = {0};
+  
+  float percent;
+  int realread;
+  uint8_t buffer[1024] = {0x00};
+  
+  while ((realread = fread(buffer, 1, 1024, f)) == 1024) {
+    for (int i = 0; i < realread; i++) {
+      data[buffer[i]] += 1;
+    }
+  }
 
-  memcpy(sort, data, 256 * sizeof(long int));
+  memcpy(sort, data, 256 * sizeof(INT32));
   quicksort(sort, 0, 255);
 
   fclose(f);
 
   printf("------------------------------------------\n");
-  printf("| HEX | DEC | CHR |  FREQUENCY | PROCENT |\n");
+  printf("| HEX | DEC | CHR |  FREQUENCY | PERCENT |\n");
   printf("------------------------------------------\n");
 
   for (int i = 255, j; (i >= 0) && (j >= 0) && (sort[i] > 0); i--) {
 
     j = 255;
 
-    while ((j >= 0) && (sort[i] != data[j]))
+    while ((j >= 0) && (sort[i] != data[j])) {
       j--;
+    }
 
-    if ((j < 0) || (data[j] == -1))
+    if ((j < 0) || (data[j] == -1)) {
       continue;
+    }
 
-    procent = (float)sort[i] / div;
-    printf("|  %2.2X | %3d |   %c | %10ld |  %5.2f%% |\n", (uint8_t)j, j, (chrcrt(j) ? (uint8_t)j : ' '), sort[i], procent);
+    percent = (float)sort[i] / div;
+    printf("|  %2.2X | %3d |   %c | %10d |  %5.2f%% |\n",
+          (uint8_t)j, j, (charcontrol(j) ? (uint8_t)j : ' '), sort[i], percent);
+    
     fflush(stdout);
 
     sort[i] = data[j] = -1;
@@ -98,3 +113,4 @@ int main (int argc, uint8_t * argv[]) {
 
   return 0;
 }
+
