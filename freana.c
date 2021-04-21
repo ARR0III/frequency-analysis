@@ -101,7 +101,7 @@ int main (int argc, char * argv[]) {
     }
 
     percent = (float)sort[i] / div;
-    printf("|  %2.2X | %3d |   %c | %10d |  %5.2f%% |\n",
+    printf("|  %2.2X | %3d |   %c | %10d | %5.2f%% |\n",
           (uint8_t)j, j, (charcontrol(j) ? (uint8_t)j : ' '), sort[i], percent);
     
     fflush(stdout);
