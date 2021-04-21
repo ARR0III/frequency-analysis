@@ -2,11 +2,11 @@
 #include <stdint.h>
 #include <string.h>
 
-typedef int32_t INT32;
+typedef int32_t DATA;
 
-void quicksort(INT32 * data, INT32 min, INT32 max) {
+void quicksort(DATA * data, DATA min, DATA max) {
   if (min < max) {
-    INT32 left = min, right = max, middle = data[(left + right) / 2];
+    DATA left = min, right = max, middle = data[(left + right) / 2];
       do {
         while (data[left] < middle) {
           left++;
@@ -17,7 +17,7 @@ void quicksort(INT32 * data, INT32 min, INT32 max) {
         }
         
         if (left <= right) {
-          INT32 tmp = data[left];
+          DATA tmp = data[left];
           data[left] = data[right];
           data[right] = tmp;
           left++;
@@ -66,8 +66,8 @@ int main (int argc, char * argv[]) {
   
   float div = (float)fsize / 100.0;
   
-  INT32 data[256] = {0};
-  INT32 sort[256] = {0};
+  DATA data[256] = {0};
+  DATA sort[256] = {0};
   
   float percent;
   int realread;
@@ -79,7 +79,7 @@ int main (int argc, char * argv[]) {
     }
   }
 
-  memcpy(sort, data, 256 * sizeof(INT32));
+  memcpy(sort, data, 256 * sizeof(DATA));
   quicksort(sort, 0, 255);
 
   fclose(f);
