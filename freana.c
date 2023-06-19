@@ -69,16 +69,27 @@ int main (int argc, char * argv[]) {
   DATA data[256] = {0};
   DATA sort[256] = {0};
   
-  float percent;
-  int realread;
-  uint8_t buffer[1024] = {0x00};
+  float percent = 0.0f;
+  int realread = 0;
+  uint8_t * buffer = (uint8_t*)malloc(1024);
   
-  while ((realread = fread(buffer, 1, 1024, f)) == 1024) {
+  if (NULL == buffer) {
+    return -1;
+  }
+  
+  while (1) {
+    realread = (int)fread(buffer, 1, 1024, f);
+    
     for (int i = 0; i < realread; i++) {
       data[buffer[i]] += 1;
     }
+    
+    if (realread < 1024)
+      break;
   }
 
+  free(buffer);
+  
   memcpy(sort, data, 256 * sizeof(DATA));
   quicksort(sort, 0, 255);
 
