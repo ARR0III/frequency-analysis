@@ -35,9 +35,8 @@ int charcontrol(int c) {
   if (c < 33 || c > 126) {
     return 0;
   }
-  else {
-    return c;
-  }
+
+  return c;
 }
 
 int main (int argc, char * argv[]) {
@@ -65,55 +64,66 @@ int main (int argc, char * argv[]) {
     return 0;
   }
   
-  float div = (float)fsize / 100.0;
+  double percent;
+  double div = (double)fsize / 100.0;
   
   DATA data[256] = {0};
   DATA sort[256] = {0};
-  
-  float percent = 0.0f;
+
   int realread = 0;
+  uint32_t byte_counter = 0;  
+  uint32_t symbol_counter = 0;
+
   uint8_t * buffer = (uint8_t*)malloc(1024);
-  
+
   if (NULL == buffer) {
     return -1;
   }
   
   while (1) {
     realread = (int)fread(buffer, 1, 1024, f);
-    
+
     for (int i = 0; i < realread; i++) {
-      data[buffer[i]] += 1;
+      int index = buffer[i];
+
+      if (0 == data[index]) {
+        byte_counter++;
+      }
+
+      data[index]++;
     }
     
-    if (realread < 1024)
+    if (realread < 1024) /* if read from file < 1024 byte then break cycle */
       break;
   }
 
   free(buffer);
-  
+  fclose(f);
+
   memcpy(sort, data, 256 * sizeof(DATA));
   quicksort(sort, 0, 255);
-
-  fclose(f);
 
   printf("------------------------------------------\n");
   printf("| HEX | DEC | CHR |  FREQUENCY | PERCENT |\n");
   printf("------------------------------------------\n");
 
-  for (int i = 255, j; (i >= 0) && (j >= 0) && (sort[i] > 0); i--) {
-
+  for (int i = 255, j = 0; i >= 0 && j >= 0 && sort[i] > 0; i--) {
     j = 255;
 
-    while ((j >= 0) && (sort[i] != data[j])) {
+    while (j >= 0 && sort[i] != data[j]) {
       j--;
     }
 
-    if ((j < 0) || (data[j] == -1)) {
+    if (j < 0 || -1 == data[j]) {
       continue;
     }
 
-    percent = (float)sort[i] / div;
-    printf("|  %2.2X | %3d |   %c | %10d | %5.2f%% |\n",
+    if (charcontrol(j)) {
+      symbol_counter++;
+    }
+
+    percent = (double)sort[i] / div;
+    printf("|  %2.2X | %3d |   %c | %10d | %5.2lf%% |\n",
           (uint8_t)j, j, (charcontrol(j) ? (uint8_t)j : ' '), sort[i], percent);
     
     fflush(stdout);
@@ -121,6 +131,9 @@ int main (int argc, char * argv[]) {
     sort[i] = data[j] = -1;
   }
 
+  printf("------------------------------------------\n");
+  printf("| bytes:\t%3d\n", byte_counter);
+  printf("| symbols:\t%3d\n", symbol_counter);
   printf("------------------------------------------\n");
 
   return 0;
