@@ -6,29 +6,31 @@
 typedef int32_t DATA;
 
 void quicksort(DATA * data, DATA min, DATA max) {
-  if (min < max) {
-    DATA left = min, right = max, middle = data[(left + right) / 2];
-      do {
-        while (data[left] < middle) {
-          left++;
-        }
-        
-        while (data[right] > middle) {
-          right--;
-        }
-        
-        if (left <= right) {
-          DATA tmp = data[left];
-          data[left] = data[right];
-          data[right] = tmp;
-          left++;
-          right--;
-        }
-      } while (left <= right);
+  DATA i, j, t, m;
 
-    quicksort(data, min, right);
-    quicksort(data, left, max);
-  }
+  if (min >= max) return;
+  
+  i = min;
+  j = max;
+  m = data[(min + max) >> 1];
+
+  do {
+    while (data[i] < m) i++;  
+    while (data[j] > m) j--;
+        
+    if (i <= j) {
+      t = data[i];
+      data[i] = data[j];
+      data[j] = t;
+
+      i++;
+      j--;
+    }
+
+  } while (i <= j);
+
+  quicksort(data, min, j);
+  quicksort(data, i, max);
 }
 
 int charcontrol(int c) {
